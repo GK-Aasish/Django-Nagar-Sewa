@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>login</title>
+  {% load static %}
+  <link href="{% static 'src/styles.css' %}" rel="stylesheet" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body class="bg-white h-screen flex items-center justify-center">
+
+    <div class="bg-white shadow-lg rounded-lg p-8 w-full max-w-md">
+        <div class="w-full text-center">
+
+            <div class="flex justify-center mb-6">
+                <i class="fa-solid fa-handshake-angle text-indigo-600 text-5xl"></i>
+            </div>
+
+            <h2 class="text-2xl font-semibold mb-8">Log in to your account</h2>
+
+            <form class="space-y-5" method="post" action="{% url "login" %}">
+                {% csrf_token %}
+                <div class="text-left">
+                    <label class="block text-sm font-medium mb-1">Email address</label>
+                    <input type="email"
+                        class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        name="email">
+                </div>
+
+                <div class="text-left">
+                    <label class="block text-sm font-medium mb-1">Password</label>
+                    <input type="password"
+                        class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        name="password">
+                </div>
+
+                <button type="submit"
+                    class="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition">
+                    Log In
+                </button>
+            </form>
+
+            <p class="mt-6 text-sm">
+                Not a member?
+                <a href="{% url 'signup' %}" class="text-indigo-600 hover:text-indigo-800 font-medium">
+                    Sign-up here..
+                </a>
+            </p>
+
+        </div>
+    </div>
+
+</body>
+</html>
