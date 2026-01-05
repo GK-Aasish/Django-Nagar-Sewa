@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -11,7 +10,6 @@
     <link href="{% static 'src/styles.css' %}" rel="stylesheet" />
     <!-- Font Awesome -->
     <script src="https://kit.fontawesome.com/b480fa4bf0.js" crossorigin="anonymous"></script>
-
 </head>
 <body class="bg-white h-screen flex items-center justify-center">
 
@@ -31,16 +29,16 @@
                         <label class="block text-sm font-medium mb-1">First Name</label>
                         <input type="text"
                             class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500"
-                            name = "firstname">
-                            <p class="text-red-500"></p>
+                            name = "firstname" value = '{{data.firstname}}'>
+                            <p class="text-red-500">{{errors.firstname}} </p>
                     </div>
 
                     <div class="w-1/2 text-left">
                         <label class="block text-sm font-medium mb-1">Last Name</label>
                         <input type="text"
                             class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500"
-                            name = "lastname">
-                            <p class="text-red-500"></p>
+                            name = "lastname" value = '{{data.lastname}}'>
+                            <p class="text-red-500">{{errors.lastname}} </p>
                     </div>
                 </div>
 
@@ -48,24 +46,24 @@
                     <label class="block text-sm font-medium mb-1">Email address</label>
                     <input type="email"
                         class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500"
-                        name = "email">
-                        <p class="text-red-500"></p>
+                        name = "email" value = '{{data.email}}'>
+                        <p class="text-red-500">{{errors.email}} </p>
                 </div>
 
                 <div class="text-left">
                     <label class="block text-sm font-medium mb-1">Password</label>
                     <input type="password"
                         class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500"
-                        name="password">
-                        <p class="text-red-500"></p>
+                        name="password" value = '{{data.password}}'>
+                        <p class="text-red-500">{{errors.password}} </p>
                 </div>
 
                 <div class="text-left">
                     <label class="block text-sm font-medium mb-1">Confirm Password</label>
                     <input type="password"
                         class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500"
-                        name="confirm">
-                        <p class="text-red-500"></p>
+                        name="confirm" value = '{{data.confirm}}'>
+                        <p class="text-red-500">{{errors.confirm}} </p>
                 </div>
 
                 <button type="submit"
