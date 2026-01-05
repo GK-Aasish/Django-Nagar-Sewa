@@ -1,0 +1,90 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+
+    {% load static %}
+    <link href="{% static 'src/styles.css' %}" rel="stylesheet" />
+    <!-- Font Awesome -->
+    <script src="https://kit.fontawesome.com/b480fa4bf0.js" crossorigin="anonymous"></script>
+
+</head>
+<body class="bg-white h-screen flex items-center justify-center">
+
+    <div class="bg-white shadow-lg rounded-lg p-8 w-full max-w-md">
+        <div class="w-full text-center">
+
+            <div class="flex justify-center mb-6">
+                <i class="fa-solid fa-handshake-angle text-indigo-600 text-5xl"></i>
+            </div>
+
+            <h2 class="text-2xl font-semibold mb-8">Create your account</h2>
+
+            <form action ="{% url 'signup' %}" method="post" class="space-y-5">
+                {% csrf_token %}
+                <div class="flex gap-4">
+                    <div class="w-1/2 text-left">
+                        <label class="block text-sm font-medium mb-1">First Name</label>
+                        <input type="text"
+                            class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500"
+                            name = "firstname">
+                            <p class="text-red-500"></p>
+                    </div>
+
+                    <div class="w-1/2 text-left">
+                        <label class="block text-sm font-medium mb-1">Last Name</label>
+                        <input type="text"
+                            class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500"
+                            name = "lastname">
+                            <p class="text-red-500"></p>
+                    </div>
+                </div>
+
+                <div class="text-left">
+                    <label class="block text-sm font-medium mb-1">Email address</label>
+                    <input type="email"
+                        class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        name = "email">
+                        <p class="text-red-500"></p>
+                </div>
+
+                <div class="text-left">
+                    <label class="block text-sm font-medium mb-1">Password</label>
+                    <input type="password"
+                        class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        name="password">
+                        <p class="text-red-500"></p>
+                </div>
+
+                <div class="text-left">
+                    <label class="block text-sm font-medium mb-1">Confirm Password</label>
+                    <input type="password"
+                        class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        name="confirm">
+                        <p class="text-red-500"></p>
+                </div>
+
+                <button type="submit"
+                    class="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition">
+                    Sign Up
+                </button>
+
+            </form>
+
+            <p class="mt-6 text-sm">
+                Already a member?
+                <a href="#" class="text-indigo-600 hover:text-indigo-800 font-medium">
+                    Log In here..
+                </a>
+            </p>
+
+        </div>
+    </div>
+
+</body>
+
+</html>
