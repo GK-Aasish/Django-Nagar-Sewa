@@ -1,0 +1,80 @@
+
+{% load static %}
+<link href="{% static 'src/styles.css' %}" rel="stylesheet" />
+<script src="https://kit.fontawesome.com/b480fa4bf0.js" crossorigin="anonymous"></script>
+
+<!-- SIDEBAR -->
+<aside class="w-64 bg-white border-r border-gray-200 flex flex-col p-4">
+
+    <!-- Logo -->
+    <div class="flex items-center space-x-2 px-2 mb-6">
+        <i class="fa-solid fa-handshake-angle text-indigo-500 text-3xl"></i>
+        <span class="text-xl font-semibold text-gray-800">Nagar-Sewa</span>
+    </div>
+
+
+    <!-- Menu -->
+    <nav class="space-y-1" id="sidebar-nav">
+
+        <a href="{% url 'dashboard' %}" class="nav-link flex items-center px-3 py-2 rounded-lg
+       {% if request.resolver_match.url_name == 'dashboard' %}
+           bg-sky-100 text-gray-900
+       {% else %}
+           text-gray-700 hover:bg-gray-100
+       {% endif %}">
+            <i class="fa-solid fa-users mr-3"></i> Dashboard
+        </a>
+
+        <a href="#" class="nav-link flex items-center px-3 py-2 rounded-lg
+       {% if request.resolver_match.url_name == 'meeting' %}
+           bg-sky-100 text-gray-900
+       {% else %}
+           text-gray-700 hover:bg-gray-100
+       {% endif %}">
+            <i class="fa-solid fa-folder mr-3"></i> Meetings
+        </a>
+
+        <a href="#" class="nav-link flex items-center px-3 py-2 rounded-lg
+       {% if request.resolver_match.url_name == 'event' %}
+           bg-sky-100 text-gray-900
+       {% else %}
+           text-gray-700 hover:bg-gray-100
+       {% endif %}">
+            <i class="fa-solid fa-calendar-days mr-3"></i> Event
+        </a>
+
+        <a href="#" class="nav-link flex items-center px-3 py-2 rounded-lg
+       {% if request.resolver_match.url_name == 'create_notice' %}
+           bg-sky-100 text-gray-900
+       {% else %}
+           text-gray-700 hover:bg-gray-100
+       {% endif %}">
+            <i class="fa-solid fa-file-alt mr-3"></i> Notice
+        </a>
+
+    </nav>
+
+
+    <!-- Settings -->
+    <div class="mt-auto pt-4">
+        <a href="#" class="flex items-center px-3 py-2 rounded-lg font-medium
+       {% if request.resolver_match.url_name == 'setting' %}
+           bg-indigo-50 text-indigo-600
+       {% else %}
+           text-gray-700 hover:bg-gray-100
+       {% endif %}">
+
+            <div class="flex items-center justify-between w-full cursor-pointer">
+
+                <div class="flex items-center space-x-2">
+                    <img src="https://i.pravatar.cc/40" class="h-8 w-8 rounded-full" />
+                    <span class="font-semibold">Tom Cook</span>
+                </div>
+
+                <i class="fa-solid fa-chevron-down h-4 ml-3"></i>
+            </div>
+        </a>
+    </div>
+
+
+</aside>
