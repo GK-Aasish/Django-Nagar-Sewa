@@ -1,0 +1,208 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Setting</title>
+    {% load static %}
+    <link href="{% static 'src/styles.css' %}" rel="stylesheet" />
+    <script
+      src="https://kit.fontawesome.com/b480fa4bf0.js" crossorigin="anonymous"
+    ></script>
+  </head>
+
+  <body class="bg-gray-50">
+    <!-- MAIN WRAPPER -->
+    <div class="flex h-screen">{% include "components/sidebar.html" %}
+      <div id="messages-container" class="fixed top-4 right-4 z-50 space-y-2 w-96">
+  {% if messages %}
+    {% for message in messages %}
+      <div class="toast relative flex items-start gap-3 p-3 rounded-lg shadow-lg transition-all duration-500 bg-white border-l-4
+        {% if message.tags == 'error' %}
+          border-red-500 text-red-700
+        {% else %}
+          border-green-500 text-green-700
+        {% endif %}">
+        
+        <!-- Icon -->
+        <div class="mt-1">
+          {% if message.tags == 'error' %}
+            <i class="fas fa-circle-exclamation"></i>
+          {% else %}
+            <i class="fas fa-circle-check"></i>
+          {% endif %}
+        </div>
+
+        <!-- Message text -->
+        <div class="flex-1 text-sm">
+          {{ message }}
+        </div>
+
+        <!-- Timer bar -->
+        <div class="absolute bottom-0 left-0 h-1 bg-current rounded-b-lg w-full timer-bar"></div>
+      </div>
+    {% endfor %}
+  {% endif %}
+</div>
+
+
+        <main class="flex-1 flex flex-col">
+          <section class="p-6 overflow-y-auto scrollbar-none">
+            <div
+              class="w-full h-[680px] bg-white border border-dashed border-gray-300 rounded-xl p-6 overflow-y-scroll scrollbar-hide"
+            >
+              <div
+                class="border border-gray-300 rounded-xl p-6 bg-white shadow-sm md:flex md:space-x-10"
+              >
+                <div class="md:w-1/3 mb-6 md:mb-0 flex flex-col justify-start">
+                  <h2 class="text-lg font-semibold mb-1">Personal Information</h2>
+                  <p class="text-sm text-gray-600">
+                    Use a permanent address where you can receive mail.
+                  </p>
+                </div>
+    
+                <div class="flex-1 space-y-5">
+                  <div class="flex mb-5">
+                    <img
+                      src="https://i.pravatar.cc/100"
+                      class="h-24 w-24 rounded-lg object-cover mr-4"
+                    />
+                    <div class="flex flex-col justify-center">
+                      <button
+                        class="mb-2 px-4 py-1.5 rounded-md bg-gray-200 hover:bg-gray-300 text-sm font-medium"
+                      >
+                        Change avatar
+                      </button>
+                      <p class="text-xs text-gray-500">JPG, GIF or PNG. 1MB max.</p>
+                    </div>
+                  </div>
+    
+                  <div class="grid grid-cols-2 gap-4">
+                    <div>
+                      <label class="text-sm font-medium">First name</label>
+                      <p class="mt-1 w-full border border-gray-300 rounded-md p-2">
+                        {{request.user.first_name}}
+                      </p>
+                    </div>
+                    <div>
+                      <label class="text-sm font-medium">Last name</label>
+                      <p class="mt-1 w-full border border-gray-300 rounded-md p-2">
+                        {{request.user.last_name}}
+                      </p>
+                    </div>
+                    <div class="col-span-2">
+                      <label class="text-sm font-medium">Email address</label>
+                      <p class="mt-1 w-full border border-gray-300 rounded-md p-2">
+                        {{request.user}}
+                      </p>
+                    </div>
+                    <div class="col-span-2">
+                      <label class="text-sm font-medium">Creation Date</label>
+                      <p class="mt-1 w-full border border-gray-300 rounded-md p-2">
+                        {{request.user.date_joined}}
+                      </p>
+                    </div>
+                  </div>
+    
+                </div>
+              </div>
+    
+              <div class="border border-gray-300 rounded-xl p-6 bg-white shadow-sm md:flex md:space-x-10 mt-6">
+                <div class="md:w-1/3 mb-6 md:mb-0 flex flex-col justify-start">
+                  <h2 class="text-lg font-semibold mb-1">Change password</h2>
+                  <p class="text-sm text-gray-600">
+                    Update your password associated with your account.
+                  </p>
+                </div>
+    
+                <form
+                  method="POST"
+                  action="{% url 'change_password' %}"
+                  class="space-y-5 max-w-md"
+                >
+                  {% csrf_token %}
+
+                  <div>
+                    <label class="text-sm font-medium">Current password</label>
+                    <input
+                      type="password"
+                      name="current_password"
+                      required
+                      class="mt-1 w-full border border-gray-300 rounded-md p-2"
+                    />
+                  </div>
+
+                  <div>
+                    <label class="text-sm font-medium">New password</label>
+                    <input
+                      type="password"
+                      name="new_password"
+                      required
+                      class="mt-1 w-full border border-gray-300 rounded-md p-2"
+                    />
+                  </div>
+
+                  <div>
+                    <label class="text-sm font-medium">Confirm password</label>
+                    <input
+                      type="password"
+                      name="confirm_password"
+                      required
+                      class="mt-1 w-full border border-gray-300 rounded-md p-2"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    class="px-4 py-2 rounded-md bg-indigo-500 text-white hover:bg-indigo-600"
+                  >
+                    Save
+                  </button>
+                </form>
+
+              </div>
+
+              <div class="border border-gray-300 rounded-xl p-6 bg-white shadow-sm md:flex md:space-x-10 mt-6">
+                <div class="md:w-1/3 mb-6 md:mb-0 flex flex-col justify-start">
+                  <h2 class="text-lg font-semibold mb-1">Logout</h2>
+                  <p class="text-sm text-gray-600">
+                    Logout from the current session.
+                  </p>
+                </div>
+    
+                <div class="flex-1 space-y-5">
+                  <a href="{% url 'logout' %}">
+                    <button class="px-4 py-2 rounded-md bg-red-500 text-white hover:bg-red-600 mt-4">Logout</button>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </section>
+        </main>
+    </div>
+    <script>
+document.addEventListener("DOMContentLoaded", () => {
+  const toasts = document.querySelectorAll("#messages-container .toast");
+  const duration = 4000; // 4 seconds
+
+  toasts.forEach((toast) => {
+    const timerBar = toast.querySelector(".timer-bar");
+
+    // Animate timer bar
+    timerBar.style.transition = `width ${duration}ms linear`;
+    setTimeout(() => {
+      timerBar.style.width = '0%';
+    }, 50); // slight delay to trigger transition
+
+    // Remove toast after duration
+    setTimeout(() => {
+      toast.classList.add("opacity-0", "translate-x-4"); // fade + slide
+      setTimeout(() => toast.remove(), 500); // remove from DOM after animation
+    }, duration);
+  });
+});
+</script>
+
+  </body>
+</html>

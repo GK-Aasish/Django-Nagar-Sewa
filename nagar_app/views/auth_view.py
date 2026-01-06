@@ -4,32 +4,6 @@ from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages
 from django.contrib.auth.models import User
 
-def login_module(request):
-    errors = {}
-    if request.method == 'POST':
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-
-        if not email:
-            errors['email'] = "Email field is Required"
-        elif not User.objects.filter(username=email).exists():
-            errors['email'] = "Email does not exist ! please signup first"
-
-        if not password:
-            errors['password'] = "Password is required"
-
-        if errors:
-            return render(request, 'auth/login.html', {'errors': errors,'data':request.POST})
-        
-        user = authenticate(request, username=email, password=password)
-
-        if user is not None:
-            login(request, user)
-            return redirect('dashboard')
-    else:
-        errors['username'] = "Invalid login credentials"
-        errors['password'] = "Invalid login credentials"
-        return render(request, 'auth/login.html', {'errors': errors,'data':request.POST})
 
 def signup_module(request):
     errors = {}
@@ -82,3 +56,35 @@ def signup_module(request):
         return render(request, 'auth/signup.html')
 
     
+
+def login_module(request):
+    errors = {}
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+
+        if not email:
+            errors['email'] = "Email field is Required"
+        elif not User.objects.filter(username=email).exists():
+            errors['email'] = "Email does not exist ! please signup first"
+
+        if not password:
+            errors['password'] = "Password is required"
+
+        if errors:
+            return render(request, 'auth/login.html', {'errors': errors,'data':request.POST})
+        
+        user = authenticate(request, username=email, password=password)
+
+        if user is not None:
+            login(request, user)
+            return redirect('dashboard')
+        else:
+            errors['username'] = "Invalid login credentia"
+            errors['password'] = "Invalid login credentials"
+            return render(request, 'auth/login.html', {'errors': errors,'data':request.POST})
+    else:
+        return render(request,'auth/login.html')
+def logout_module(request):
+    logout(request)
+    return redirect('dashboard')

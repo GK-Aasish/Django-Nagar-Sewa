@@ -18,7 +18,7 @@
 
         <a href="{% url 'dashboard' %}" class="nav-link flex items-center px-3 py-2 rounded-lg
        {% if request.resolver_match.url_name == 'dashboard' %}
-           bg-sky-100 text-gray-900
+           bg-sky-100 text-indigo-600
        {% else %}
            text-gray-700 hover:bg-gray-100
        {% endif %}">
@@ -27,7 +27,7 @@
 
         <a href="#" class="nav-link flex items-center px-3 py-2 rounded-lg
        {% if request.resolver_match.url_name == 'meeting' %}
-           bg-sky-100 text-gray-900
+           bg-sky-100 text-indigo-600
        {% else %}
            text-gray-700 hover:bg-gray-100
        {% endif %}">
@@ -36,7 +36,7 @@
 
         <a href="#" class="nav-link flex items-center px-3 py-2 rounded-lg
        {% if request.resolver_match.url_name == 'event' %}
-           bg-sky-100 text-gray-900
+           bg-sky-100 text-indigo-600
        {% else %}
            text-gray-700 hover:bg-gray-100
        {% endif %}">
@@ -45,7 +45,7 @@
 
         <a href="#" class="nav-link flex items-center px-3 py-2 rounded-lg
        {% if request.resolver_match.url_name == 'create_notice' %}
-           bg-sky-100 text-gray-900
+           bg-sky-100 text-indigo-600
        {% else %}
            text-gray-700 hover:bg-gray-100
        {% endif %}">
@@ -57,7 +57,7 @@
 
     <!-- Settings -->
     <div class="mt-auto pt-4">
-        <a href="#" class="flex items-center px-3 py-2 rounded-lg font-medium
+        <a {% if request.user.is_authenticated %} href=" {% url 'setting' %}" {% else %} href="{% url 'login' %}"" {% endif %} class="flex items-center px-3 py-2 rounded-lg font-medium
        {% if request.resolver_match.url_name == 'setting' %}
            bg-indigo-50 text-indigo-600
        {% else %}
@@ -67,8 +67,14 @@
             <div class="flex items-center justify-between w-full cursor-pointer">
 
                 <div class="flex items-center space-x-2">
-                    <img src="https://i.pravatar.cc/40" class="h-8 w-8 rounded-full" />
-                    <span class="font-semibold">Tom Cook</span>
+                    
+                    {% if request.user.is_authenticated %}    
+                        <img src="https://i.pravatar.cc/40" class="h-8 w-8 rounded-full" />
+                        <span class="font-semibold">{{request.user.first_name}}</span>
+                    {% else %}
+                        <i class="fa-solid fa-user"></i>
+                        <span class="font-semibold">Login</span>
+                    {% endif %}
                 </div>
 
                 <i class="fa-solid fa-chevron-down h-4 ml-3"></i>
