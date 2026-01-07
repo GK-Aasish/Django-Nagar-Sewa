@@ -1,6 +1,7 @@
 
 from django.shortcuts import render,redirect
 from django.contrib.auth import authenticate,login,logout
+from django.contrib.auth.models import Group
 from django.contrib import messages
 from django.contrib.auth.models import User
 
@@ -47,6 +48,10 @@ def signup_module(request):
                 last_name=lastname,
                 password=password,
             )
+
+            role = Group.objects.get(name='Member')
+            user.groups.add(role)
+
             messages.success(request,'User Registration Successfully !! ')
             return redirect('login')
 
@@ -78,6 +83,7 @@ def login_module(request):
 
         if user is not None:
             login(request, user)
+            messages.success(request, 'Loged In Successfylly!!')
             return redirect('dashboard')
         else:
             errors['username'] = "Invalid login credentia"

@@ -12,7 +12,36 @@
 </head>
 
 <body class="bg-gray-50">
+<div id="messages-container" class="fixed top-4 right-4 z-50 space-y-2 w-96">
+  {% if messages %}
+    {% for message in messages %}
+      <div class="toast relative flex items-start gap-3 p-3 rounded-lg shadow-lg transition-all duration-500 bg-white border-l-4
+        {% if message.tags == 'error' %}
+          border-red-500 text-red-700
+        {% else %}
+          border-green-500 text-green-700
+        {% endif %}">
+        
+        <!-- Icon -->
+        <div class="mt-1">
+          {% if 'error' in message.tags %}
+            <i class="fas fa-circle-exclamation"></i>
+          {% else %}
+            <i class="fas fa-circle-check"></i>
+          {% endif %}
+        </div>
 
+        <!-- Message text -->
+        <div class="flex-1 text-sm">
+          {{ message }}
+        </div>
+
+        <!-- Timer bar -->
+        <div class="absolute bottom-0 left-0 h-1 bg-current rounded-b-lg w-full timer-bar"></div>
+      </div>
+    {% endfor %}
+  {% endif %}
+</div>
     <!-- MAIN WRAPPER -->
     <div class="flex h-screen">
         {% include "components/sidebar.html" %}
@@ -24,7 +53,28 @@
           </section>
         </main>
     </div>
-    
+    <script>
+document.addEventListener("DOMContentLoaded", () => {
+  const toasts = document.querySelectorAll("#messages-container .toast");
+  const duration = 4000; // 4 seconds
+
+  toasts.forEach((toast) => {
+    const timerBar = toast.querySelector(".timer-bar");
+
+    // Animate timer bar
+    timerBar.style.transition = `width ${duration}ms linear`;
+    setTimeout(() => {
+      timerBar.style.width = '0%';
+    }, 50); // slight delay to trigger transition
+
+    // Remove toast after duration
+    setTimeout(() => {
+      toast.classList.add("opacity-0", "translate-x-4"); // fade + slide
+      setTimeout(() => toast.remove(), 500); // remove from DOM after animation
+    }, duration);
+  });
+});
+</script>
 </body>
 
 </html>
