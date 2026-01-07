@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Notice Board</title>
+  {% load static %}
+  <link href="{% static 'src/styles.css' %}" rel="stylesheet" />
+  <script src="https://kit.fontawesome.com/b480fa4bf0.js" crossorigin="anonymous"></script>
+</head>
+<body class="bg-gray-50">
+  <div class="flex h-screen">
+    {% include "components/sidebar.html" %}
+
+    <main class="flex-1 flex flex-col">
+      <section class="p-6 overflow-y-auto scrollbar-none">
+        <div class="w-full h-[680px] bg-white border border-dashed border-gray-300 rounded-xl overflow-y-scroll scrollbar-hide">
+
+          <!-- TOP BAR -->
+          <div class="flex items-center justify-between mb-6 p-4 border-b border-dashed border-gray-300">
+            <h1 class="text-xl font-semibold text-gray-700">Notice Board</h1>
+            <div class="flex items-center gap-3">
+              <!-- FILTER -->
+              <select class="text-sm border border-gray-200 rounded-md px-3 py-1.5 text-gray-600 focus:outline-none focus:ring-1 focus:ring-gray-300">
+                <option>All Notices</option>
+                <option>General</option>
+                <option>Academic</option>
+                <option>Urgent</option>
+              </select>
+
+              <!-- ADD NOTICE BUTTON -->
+              
+              {% if is_admin %}
+                <a href="{% url 'add_notice' %}" class="flex items-center gap-1.5 text-sm bg-gray-800 text-white px-4 py-1.5 rounded-md hover:bg-gray-700 transition">
+                <i class="fa-solid fa-plus text-xs"></i>
+                Add Notice
+              </a>
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- NOTICE LIST -->
+          <div id="noticeList" class="space-y-4 mx-6">
+            <!-- Example Card -->
+                <div class="relative border-l-4 border-blue-500 rounded-xl p-6 bg-white shadow-md hover:shadow-xl transition duration-300">
+                  <div class="flex justify-between items-start">
+                    <div>
+                      <!--This is title-->
+                      <h2 class="text-xl font-bold text-gray-800">Title</h2>
+                      <!--This is category-->
+                      <p class="text-xs text-gray-500 mt-1">catagories</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <!--Username-->
+                      <span class="text-xs bg-blue-100 text-blue-600 px-3 py-1 rounded-full font-semibold">User</span>
+                      <button class="text-gray-400 hover:text-gray-600 transition">
+                        <i class="fa-solid fa-chevron-down"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <!--Description-->
+                  <p class="text-sm text-gray-600 mt-4 leading-relaxed">
+                    Notice's Description here
+                  </p>
+                  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-5 gap-3">
+                    <!--created and updated times-->
+                    <div class="flex items-center gap-2 text-gray-500 text-sm">
+                      <i class="fa-regular fa-clock"></i>
+                      <span>Date</span>
+                    </div>
+                    <!-- This is reactions & Comment-->
+                    <div class="flex items-center gap-2 flex-wrap">
+                      <button class="flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-sm hover:bg-blue-100 hover:scale-105 transition">
+                        <i class="fa-regular fa-thumbs-up"></i>
+                        <span class="bg-blue-600 text-white px-2 py-0.5 rounded-full text-xs">12</span>
+                      </button>
+                      <button class="flex items-center gap-1 px-3 py-1 bg-red-50 text-red-600 rounded-full text-sm hover:bg-red-100 hover:scale-105 transition">
+                        <i class="fa-regular fa-thumbs-down"></i>
+                        <span class="bg-red-600 text-white px-2 py-0.5 rounded-full text-xs">1</span>
+                      </button>
+                      <button class="flex items-center gap-1 px-3 py-1 bg-green-50 text-green-600 rounded-full text-sm hover:bg-green-100 hover:scale-105 transition">
+                        <i class="fa-regular fa-comment"></i>
+                        <span class="bg-green-600 text-white px-2 py-0.5 rounded-full text-xs">4</span>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="mt-4 hidden actions-container flex gap-2 flex-wrap">
+                    <button class="px-3 py-1 text-sm rounded-md bg-green-600 text-white hover:bg-green-700 transition">Edit</button>
+                    <button class="px-3 py-1 text-sm rounded-md bg-red-600 text-white hover:bg-red-700 transition">Delete</button>
+                  </div>
+                </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  </div>
+</body>
+</html>

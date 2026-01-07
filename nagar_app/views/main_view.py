@@ -39,4 +39,7 @@ def setting_view(request):
         return render(request,'main/settings.html')
 
 def notice_view(request):
-    return render(request,'main/notice.html')
+    context = {
+        "is_admin": request.user.is_superuser or request.user.groups.filter(name="Admin").exists()
+    }
+    return render(request,'main/notice.html',context)

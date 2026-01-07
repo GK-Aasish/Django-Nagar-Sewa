@@ -1,6 +1,7 @@
 from django.urls import path
 from .views.main_view import dashboard_view,setting_view,notice_view
 from .views.auth_view import signup_module,login_module,logout_module
+from .views.components_view import add_notice_model
 
 urlpatterns = [
     path('',dashboard_view,name='dashboard'),
@@ -10,4 +11,5 @@ urlpatterns = [
     path('notice/',notice_view,name ='notice'),
     path('logout/',logout_module,name='logout'),
     path("settings/change-password/",setting_view, name="change_password"),
+    path('notice/add/',add_notice_model,name='add_notice')
 ]
