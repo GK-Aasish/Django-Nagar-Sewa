@@ -2,6 +2,8 @@ from django.shortcuts import render,redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
+from .utils import user_is_admin
+from ..models import Notice
 
 
 def dashboard_view(request):
@@ -39,7 +41,6 @@ def setting_view(request):
         return render(request,'main/settings.html')
 
 def notice_view(request):
-    context = {
-        "is_admin": request.user.is_superuser or request.user.groups.filter(name="Admin").exists()
-    }
-    return render(request,'main/notice.html',context)
+    notices = Notice.objects.all().order_by('-created_at')
+    context = {"is_admin": user_is_admin(request.user)}
+    return render(request,'main/notice.html',{'notices':notices,'context':context})
