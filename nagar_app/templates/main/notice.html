@@ -32,75 +32,86 @@
               
               {% if context.is_admin %}
                 <a href="{% url 'add_notice' %}" class="flex items-center gap-1.5 text-sm bg-gray-800 text-white px-4 py-1.5 rounded-md hover:bg-gray-700 transition">
-                <i class="fa-solid fa-plus text-xs"></i>
-                Add Notice
-              </a>
+                  <i class="fa-solid fa-plus text-xs"></i>
+                  Add Notice
+                </a>
               {% endif %}
             </div>
           </div>
 
           <!-- NOTICE LIST -->
           <div id="noticeList" class="space-y-4 mx-6">
-            <!-- Example Card -->
-            
             {% for items in notices %}
-                <div class="relative border-l-4 border-blue-500 rounded-xl p-6 bg-white shadow-md hover:shadow-xl transition duration-300">
-                  <div class="flex justify-between items-start">
-                    <div>
-                      <!--This is title-->
-                      <h2 class="text-xl font-bold text-gray-800">{{items.title}}</h2>
-                      <!--This is category-->
-                      <p class="text-xs text-gray-500 mt-1">{{items.category.name}}</p>
-                    </div>
-                    <div class="flex items-center gap-2">
-                      <!--Username-->
-                      <span class="text-xs bg-blue-100 text-blue-600 px-3 py-1 rounded-full font-semibold">{{items.author.first_name}}</span>
-                      {% if context.is_admin%}
+              <div class="relative border-l-4 rounded-xl p-6 bg-white shadow-md hover:shadow-xl transition duration-300"
+                   data-category="{{ items.category.id }}">
+                <div class="flex justify-between items-start">
+                  <div>
+                    <h2 class="text-xl font-bold text-gray-800">{{ items.title }}</h2>
+                    <p class="text-xs text-gray-500 mt-1">{{ items.category.name }}</p>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs bg-blue-100 text-blue-600 px-3 py-1 rounded-full font-semibold">{{ items.author.first_name }}</span>
+                    {% if context.is_admin %}
                       <button class="text-gray-400 hover:text-gray-600 transition">
                         <i class="fa-solid fa-chevron-down"></i>
                       </button>
-                      {% endif %}
-                    </div>
-                  </div>
-                  <!--Description-->
-                  <p class="text-sm text-gray-600 mt-4 leading-relaxed">
-                    {{items.description}}
-                  </p>
-                  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-5 gap-3">
-                    <!--created and updated times-->
-                    <div class="flex items-center gap-2 text-gray-500 text-sm">
-                      <i class="fa-regular fa-clock"></i>
-                      <span>{{items.created_at}}</span>
-                    </div>
-                    <!-- This is reactions & Comment-->
-                    <div class="flex items-center gap-2 flex-wrap">
-                      <button class="flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-sm hover:bg-blue-100 hover:scale-105 transition">
-                        <i class="fa-regular fa-thumbs-up"></i>
-                        <span class="bg-blue-600 text-white px-2 py-0.5 rounded-full text-xs">12</span>
-                      </button>
-                      <button class="flex items-center gap-1 px-3 py-1 bg-red-50 text-red-600 rounded-full text-sm hover:bg-red-100 hover:scale-105 transition">
-                        <i class="fa-regular fa-thumbs-down"></i>
-                        <span class="bg-red-600 text-white px-2 py-0.5 rounded-full text-xs">1</span>
-                      </button>
-                      <button class="flex items-center gap-1 px-3 py-1 bg-green-50 text-green-600 rounded-full text-sm hover:bg-green-100 hover:scale-105 transition">
-                        <i class="fa-regular fa-comment"></i>
-                        <span class="bg-green-600 text-white px-2 py-0.5 rounded-full text-xs">4</span>
-                      </button>
-                    </div>
-                  </div>
-                  <div class="mt-4 hidden actions-container flex gap-2 flex-wrap">
-                    <button class="px-3 py-1 text-sm rounded-md bg-green-600 text-white hover:bg-green-700 transition">Edit</button>
-                    <button class="px-3 py-1 text-sm rounded-md bg-red-600 text-white hover:bg-red-700 transition">Delete</button>
+                    {% endif %}
                   </div>
                 </div>
-            {% endfor %}    
+                <p class="text-sm text-gray-600 mt-4 leading-relaxed">{{ items.description }}</p>
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-5 gap-3">
+                  <div class="flex items-center gap-2 text-gray-500 text-sm">
+                    <i class="fa-regular fa-clock"></i>
+                    <span>{{ items.created_at }}</span>
+                  </div>
+                  
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <button class="flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-sm hover:bg-blue-100 hover:scale-105 transition">
+                      <i class="fa-regular fa-thumbs-up"></i>
+                      <span class="bg-blue-600 text-white px-2 py-0.5 rounded-full text-xs">12</span>
+                    </button>
+                    <button class="flex items-center gap-1 px-3 py-1 bg-red-50 text-red-600 rounded-full text-sm hover:bg-red-100 hover:scale-105 transition">
+                      <i class="fa-regular fa-thumbs-down"></i>
+                      <span class="bg-red-600 text-white px-2 py-0.5 rounded-full text-xs">1</span>
+                    </button>
+                    <button class="flex items-center gap-1 px-3 py-1 bg-green-50 text-green-600 rounded-full text-sm hover:bg-green-100 hover:scale-105 transition">
+                      <i class="fa-regular fa-comment"></i>
+                      <span class="bg-green-600 text-white px-2 py-0.5 rounded-full text-xs">4</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="mt-4 hidden actions-container flex gap-2 flex-wrap">
+                  <button class="px-3 py-1 text-sm rounded-md bg-green-600 text-white hover:bg-green-700 transition">Edit</button>
+                  <button class="px-3 py-1 text-sm rounded-md bg-red-600 text-white hover:bg-red-700 transition">Delete</button>
+                </div>
+              </div>
+            {% endfor %}
           </div>
         </div>
       </section>
     </main>
   </div>
-  </div>
+
+  <!-- Dynamic border color script -->
   <script>
+    const categoryColors = {
+      1: "#2563eb",  // General
+      2: "#059669",  // Village Meeting
+      3: "#0d9488",  // Government Scheme
+      4: "#84cc16",  // Agriculture
+      5: "#06b6d4",  // Water / Electricity
+      6: "#f43f5e",  // Health
+      7: "#f59e0b",  // Road / Sanitation
+      8: "#d946ef"   // Festival / Event
+    };
+
+    document.querySelectorAll('#noticeList .relative').forEach(card => {
+      const category = card.dataset.category;
+      card.style.borderLeftColor = categoryColors[category] || "#94a3b8"; // default slate-400
+    });
+
+
+    
   // Select all chevron buttons
   const toggleButtons = document.querySelectorAll('#noticeList .fa-chevron-down');
 
@@ -118,7 +129,7 @@
       actions.classList.toggle('hidden');
     });
   });
-</script>
+  </script>
 
 </body>
 </html>
