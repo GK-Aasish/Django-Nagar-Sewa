@@ -92,4 +92,5 @@ def login_module(request):
         return render(request,'auth/login.html')
 def logout_module(request):
     logout(request)
+    messages.success(request,"Logout Successfully")
     return redirect('dashboard')

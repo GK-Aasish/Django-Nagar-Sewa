@@ -11,6 +11,7 @@
 <body class="bg-gray-50">
   <div class="flex h-screen">
     {% include "components/sidebar.html" %}
+    {% include 'components/messages.html' %}
 
     <main class="flex-1 flex flex-col">
       <section class="p-6 overflow-y-auto scrollbar-none">
@@ -21,16 +22,15 @@
             <h1 class="text-xl font-semibold text-gray-700">Notice Board</h1>
             <div class="flex items-center gap-3">
               <!-- FILTER -->
-              <select class="text-sm border border-gray-200 rounded-md px-3 py-1.5 text-gray-600 focus:outline-none focus:ring-1 focus:ring-gray-300">
-                <option>All Notices</option>
-                <option>General</option>
-                <option>Academic</option>
-                <option>Urgent</option>
+              <select id="categoryFilter" class="text-sm border border-gray-200 rounded-md px-3 py-1.5 text-gray-600 focus:outline-none focus:ring-1 focus:ring-gray-300">
+                <option value="all">All Notices</option>
+                {% for category in categories %}
+                  <option value="{{ category.name }}">{{ category.name }}</option>
+                {% endfor %}
               </select>
 
               <!-- ADD NOTICE BUTTON -->
-              
-              {% if context.is_admin %}
+              {% if is_admin %}
                 <a href="{% url 'add_notice' %}" class="flex items-center gap-1.5 text-sm bg-gray-800 text-white px-4 py-1.5 rounded-md hover:bg-gray-700 transition">
                   <i class="fa-solid fa-plus text-xs"></i>
                   Add Notice
@@ -41,50 +41,60 @@
 
           <!-- NOTICE LIST -->
           <div id="noticeList" class="space-y-4 mx-6">
-            {% for items in notices %}
+            {% for item in notices_with_reactions %}
+              {% with notice=item.notice user_reaction=item.user_reaction %}
               <div class="relative border-l-4 rounded-xl p-6 bg-white shadow-md hover:shadow-xl transition duration-300"
-                   data-category="{{ items.category.id }}">
+                   data-category="{{ notice.category.name }}">
                 <div class="flex justify-between items-start">
                   <div>
-                    <h2 class="text-xl font-bold text-gray-800">{{ items.title }}</h2>
-                    <p class="text-xs text-gray-500 mt-1">{{ items.category.name }}</p>
+                    <h2 class="text-xl font-bold text-gray-800">{{ notice.title }}</h2>
+                    <p class="text-xs text-gray-500 mt-1">{{ notice.category.name }}</p>
                   </div>
                   <div class="flex items-center gap-2">
-                    <span class="text-xs bg-blue-100 text-blue-600 px-3 py-1 rounded-full font-semibold">{{ items.author.first_name }}</span>
-                    {% if context.is_admin %}
-                      <button class="text-gray-400 hover:text-gray-600 transition">
+                    <span class="text-xs bg-blue-100 text-blue-600 px-3 py-1 rounded-full font-semibold">{{ notice.author.first_name }}</span>
+                    {% if is_admin %}
+                      <button class="text-gray-400 hover:text-gray-600 transition toggle-actions">
                         <i class="fa-solid fa-chevron-down"></i>
                       </button>
                     {% endif %}
                   </div>
                 </div>
-                <p class="text-sm text-gray-600 mt-4 leading-relaxed">{{ items.description }}</p>
+
+                <p class="text-sm text-gray-600 mt-4 leading-relaxed">{{ notice.description }}</p>
+
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-5 gap-3">
                   <div class="flex items-center gap-2 text-gray-500 text-sm">
                     <i class="fa-regular fa-clock"></i>
-                    <span>{{ items.created_at }}</span>
+                    <span>{{ notice.created_at|date:"M d, Y H:i" }}</span>
                   </div>
-                  
+
                   <div class="flex items-center gap-2 flex-wrap">
-                    <button class="flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-sm hover:bg-blue-100 hover:scale-105 transition">
+                    <!-- Like -->
+                    <button class="flex items-center gap-1 px-3 py-1 rounded-full text-sm transition reaction-btn
+                      {% if user_reaction == 'Like' %}bg-blue-100 text-blue-700{% else %}bg-blue-50 text-blue-600{% endif %}"
+                      data-notice-id="{{ notice.id }}" data-reaction="Like">
                       <i class="fa-regular fa-thumbs-up"></i>
-                      <span class="bg-blue-600 text-white px-2 py-0.5 rounded-full text-xs">12</span>
+                      <span class="bg-blue-600 text-white px-2 py-0.5 rounded-full text-xs">{{ notice.like_count }}</span>
                     </button>
-                    <button class="flex items-center gap-1 px-3 py-1 bg-red-50 text-red-600 rounded-full text-sm hover:bg-red-100 hover:scale-105 transition">
+
+                    <!-- Dislike -->
+                    <button class="flex items-center gap-1 px-3 py-1 rounded-full text-sm transition reaction-btn
+                      {% if user_reaction == 'Dislike' %}bg-red-100 text-red-700{% else %}bg-red-50 text-red-600{% endif %}"
+                      data-notice-id="{{ notice.id }}" data-reaction="Dislike">
                       <i class="fa-regular fa-thumbs-down"></i>
-                      <span class="bg-red-600 text-white px-2 py-0.5 rounded-full text-xs">1</span>
-                    </button>
-                    <button class="flex items-center gap-1 px-3 py-1 bg-green-50 text-green-600 rounded-full text-sm hover:bg-green-100 hover:scale-105 transition">
-                      <i class="fa-regular fa-comment"></i>
-                      <span class="bg-green-600 text-white px-2 py-0.5 rounded-full text-xs">4</span>
+                      <span class="bg-red-600 text-white px-2 py-0.5 rounded-full text-xs">{{ notice.dislike_count }}</span>
                     </button>
                   </div>
                 </div>
-                <div class="mt-4 hidden actions-container flex gap-2 flex-wrap">
-                  <button class="px-3 py-1 text-sm rounded-md bg-green-600 text-white hover:bg-green-700 transition">Edit</button>
-                  <button class="px-3 py-1 text-sm rounded-md bg-red-600 text-white hover:bg-red-700 transition">Delete</button>
-                </div>
+
+                {% if is_admin %}
+                  <div class="mt-4 hidden actions-container flex gap-2 flex-wrap">
+                    <a href="#" class="px-3 py-1 text-sm rounded-md bg-green-600 text-white hover:bg-green-700 transition">Edit</a>
+                    <a href="#" class="px-3 py-1 text-sm rounded-md bg-red-600 text-white hover:bg-red-700 transition">Delete</a>
+                  </div>
+                {% endif %}
               </div>
+              {% endwith %}
             {% endfor %}
           </div>
         </div>
@@ -92,44 +102,101 @@
     </main>
   </div>
 
-  <!-- Dynamic border color script -->
+  <!-- Scripts -->
   <script>
     const categoryColors = {
-      1: "#2563eb",  // General
-      2: "#059669",  // Village Meeting
-      3: "#0d9488",  // Government Scheme
-      4: "#84cc16",  // Agriculture
-      5: "#06b6d4",  // Water / Electricity
-      6: "#f43f5e",  // Health
-      7: "#f59e0b",  // Road / Sanitation
-      8: "#d946ef"   // Festival / Event
+      "General": "#2563eb",
+      "Village Meeting": "#059669",
+      "Government Scheme": "#0d9488",
+      "Agriculture": "#84cc16",
+      "Water / Electricity": "#06b6d4",
+      "Health": "#f43f5e",
+      "Road / Sanitation": "#f59e0b",
+      "Festival / Event": "#d946ef"
     };
 
+    // Set border colors dynamically
     document.querySelectorAll('#noticeList .relative').forEach(card => {
       const category = card.dataset.category;
-      card.style.borderLeftColor = categoryColors[category] || "#94a3b8"; // default slate-400
+      card.style.borderLeftColor = categoryColors[category] || "#94a3b8";
     });
 
-
-    
-  // Select all chevron buttons
-  const toggleButtons = document.querySelectorAll('#noticeList .fa-chevron-down');
-
-  toggleButtons.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      // Find the closest notice card
-      const card = btn.closest('.relative');
-      if (!card) return;
-
-      // Find the actions container inside the card
-      const actions = card.querySelector('.actions-container');
-      if (!actions) return;
-
-      // Toggle visibility
-      actions.classList.toggle('hidden');
+    // Toggle admin actions
+    document.querySelectorAll('.toggle-actions').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const card = btn.closest('.relative');
+        const actions = card.querySelector('.actions-container');
+        if (actions) actions.classList.toggle('hidden');
+      });
     });
-  });
+
+    // Category filter
+    const filter = document.getElementById('categoryFilter');
+    filter.addEventListener('change', () => {
+      const selected = filter.value;
+      document.querySelectorAll('#noticeList .relative').forEach(card => {
+        if (selected === 'all' || card.dataset.category === selected) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    });
+
+    // Like/Dislike AJAX
+    document.querySelectorAll('.reaction-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const noticeId = btn.dataset.noticeId;
+        const reaction = btn.dataset.reaction;
+
+        fetch("{% url 'react_to_notice' %}", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-CSRFToken": getCookie("csrftoken"),
+          },
+          body: `notice_id=${noticeId}&reaction=${reaction}`
+        })
+        .then(response => response.json())
+        .then(data => {
+          const card = btn.closest('#noticeList .relative');
+          const likeBtn = card.querySelector('[data-reaction="Like"]');
+          const dislikeBtn = card.querySelector('[data-reaction="Dislike"]');
+
+          likeBtn.querySelector('span').textContent = data.like_count;
+          dislikeBtn.querySelector('span').textContent = data.dislike_count;
+
+          // Update button styles
+          if (reaction === 'Like') {
+            likeBtn.classList.add('bg-blue-100', 'text-blue-700');
+            likeBtn.classList.remove('bg-blue-50', 'text-blue-600');
+            dislikeBtn.classList.remove('bg-red-100', 'text-red-700');
+            dislikeBtn.classList.add('bg-red-50', 'text-red-600');
+          } else {
+            dislikeBtn.classList.add('bg-red-100', 'text-red-700');
+            dislikeBtn.classList.remove('bg-red-50', 'text-red-600');
+            likeBtn.classList.remove('bg-blue-100', 'text-blue-700');
+            likeBtn.classList.add('bg-blue-50', 'text-blue-600');
+          }
+        });
+      });
+    });
+
+    // CSRF helper
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
   </script>
-
 </body>
 </html>
