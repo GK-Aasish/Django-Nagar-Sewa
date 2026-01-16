@@ -117,3 +117,19 @@ def react_to_notice(request):
         })
 
     return JsonResponse({"error": "Invalid request"}, status=400)
+
+@login_required
+def delete_notice_view(request, notice_id):
+    if not user_is_admin(request.user):
+        messages.error(request, "You do not have permission to delete notices.")
+        return redirect('notice')
+
+    notice = get_object_or_404(Notice, id=notice_id)
+
+    if request.method == "POST":
+        notice.delete()
+        messages.success(request, "Notice deleted successfully.")
+        return redirect('notice')
+
+    # Optional: Render a confirmation page instead of JS confirm
+    return render(request, 'main/confirm_delete.html', {'notice': notice})

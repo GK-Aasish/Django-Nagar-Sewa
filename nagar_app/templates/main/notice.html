@@ -52,11 +52,6 @@
                   </div>
                   <div class="flex items-center gap-2">
                     <span class="text-xs bg-blue-100 text-blue-600 px-3 py-1 rounded-full font-semibold">{{ notice.author.first_name }}</span>
-                    {% if is_admin %}
-                      <button class="text-gray-400 hover:text-gray-600 transition toggle-actions">
-                        <i class="fa-solid fa-chevron-down"></i>
-                      </button>
-                    {% endif %}
                   </div>
                 </div>
 
@@ -65,7 +60,25 @@
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-5 gap-3">
                   <div class="flex items-center gap-2 text-gray-500 text-sm">
                     <i class="fa-regular fa-clock"></i>
-                    <span>{{ notice.created_at|date:"M d, Y H:i" }}</span>
+                    <span>{{ notice.created_at|date:"M d, Y h:i A" }}</span>
+
+                    {% if is_admin %}
+                    <div class="ml-4 actions-container flex gap-2 flex-wrap">
+                      <!-- Edit -->
+                      <a href="{% url 'edit_notice' notice.id %}" 
+                         class="px-3 py-1 text-sm rounded-md bg-green-600 text-white hover:bg-green-700 transition">
+                         Edit
+                      </a>
+
+                      <!-- Delete Button -->
+                      <button
+  class="deleteBtn px-3 py-1 text-sm rounded-md bg-red-600 text-white hover:bg-red-700 transition"
+  data-delete-url="{% url 'delete_notice' notice.id %}">
+  Delete
+</button>
+
+                    </div>
+                    {% endif %}
                   </div>
 
                   <div class="flex items-center gap-2 flex-wrap">
@@ -86,13 +99,6 @@
                     </button>
                   </div>
                 </div>
-
-                {% if is_admin %}
-                  <div class="mt-4 hidden actions-container flex gap-2 flex-wrap">
-                    <a href="#" class="px-3 py-1 text-sm rounded-md bg-green-600 text-white hover:bg-green-700 transition">Edit</a>
-                    <a href="#" class="px-3 py-1 text-sm rounded-md bg-red-600 text-white hover:bg-red-700 transition">Delete</a>
-                  </div>
-                {% endif %}
               </div>
               {% endwith %}
             {% endfor %}
@@ -101,9 +107,10 @@
       </section>
     </main>
   </div>
-
+        {% include 'components/confirm_delete.html' %}
   <!-- Scripts -->
   <script>
+    // Map category to colors
     const categoryColors = {
       "General": "#2563eb",
       "Village Meeting": "#059669",
@@ -121,25 +128,12 @@
       card.style.borderLeftColor = categoryColors[category] || "#94a3b8";
     });
 
-    // Toggle admin actions
-    document.querySelectorAll('.toggle-actions').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const card = btn.closest('.relative');
-        const actions = card.querySelector('.actions-container');
-        if (actions) actions.classList.toggle('hidden');
-      });
-    });
-
     // Category filter
     const filter = document.getElementById('categoryFilter');
     filter.addEventListener('change', () => {
       const selected = filter.value;
       document.querySelectorAll('#noticeList .relative').forEach(card => {
-        if (selected === 'all' || card.dataset.category === selected) {
-          card.style.display = 'block';
-        } else {
-          card.style.display = 'none';
-        }
+        card.style.display = (selected === 'all' || card.dataset.category === selected) ? 'block' : 'none';
       });
     });
 
@@ -166,7 +160,7 @@
           likeBtn.querySelector('span').textContent = data.like_count;
           dislikeBtn.querySelector('span').textContent = data.dislike_count;
 
-          // Update button styles
+          // Update styles
           if (reaction === 'Like') {
             likeBtn.classList.add('bg-blue-100', 'text-blue-700');
             likeBtn.classList.remove('bg-blue-50', 'text-blue-600');
@@ -197,6 +191,34 @@
       }
       return cookieValue;
     }
+
+  const deleteModal = document.getElementById("deleteModal");
+  const deleteForm = document.getElementById("deleteForm");
+  const cancelDelete = document.getElementById("cancelDelete");
+
+  // Open modal on delete click
+  document.querySelectorAll(".deleteBtn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const deleteUrl = btn.dataset.deleteUrl;
+      deleteForm.action = deleteUrl; // SET form action dynamically
+      deleteModal.classList.remove("hidden");
+    });
+  });
+
+  // Cancel delete
+  cancelDelete.addEventListener("click", () => {
+    deleteModal.classList.add("hidden");
+    deleteForm.action = "";
+  });
+
+  // Close modal when clicking outside
+  deleteModal.addEventListener("click", (e) => {
+    if (e.target === deleteModal) {
+      deleteModal.classList.add("hidden");
+      deleteForm.action = "";
+    }
+  });
+
   </script>
 </body>
 </html>
