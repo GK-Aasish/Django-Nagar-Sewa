@@ -72,7 +72,9 @@
                         {% if user_profile and user_profile.image %}
                             <img src="{{ user_profile.image.url }}" class="h-8 w-8 rounded-full object-cover" />
                         {% else %}
-                            <img src="https://i.pravatar.cc/40" class="h-8 w-8 rounded-full object-cover" />
+                            <span class="h-8 w-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center">
+                                <i class="fa-solid fa-user text-xs"></i>
+                            </span>
                         {% endif %}
                         <span class="font-semibold">{{request.user.first_name}}</span>
                     {% else %}

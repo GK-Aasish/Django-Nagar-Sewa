@@ -32,28 +32,29 @@
                 </div>
     
                 <div class="flex-1 space-y-5">
-                  <form method="POST" action="{% url 'update_avatar' %}" enctype="multipart/form-data" class="flex mb-5 items-center">
+                  <form method="POST" action="{% url 'update_avatar' %}" enctype="multipart/form-data" class="mb-5">
                     {% csrf_token %}
-                    {% if profile.image %}
-                      <img
-                        src="{{ profile.image.url }}"
-                        class="h-24 w-24 rounded-lg object-cover mr-4 border border-gray-200"
-                      />
-                    {% else %}
-                      <img
-                        src="https://i.pravatar.cc/100"
-                        class="h-24 w-24 rounded-lg object-cover mr-4 border border-gray-200"
-                      />
-                    {% endif %}
-                    <div class="flex flex-col justify-center">
-                      <input id="avatar" name="avatar" type="file" accept="image/*" class="hidden" />
-                      <label for="avatar" class="mb-2 inline-flex items-center justify-center px-4 py-1.5 rounded-md bg-gray-200 hover:bg-gray-300 text-sm font-medium cursor-pointer">
-                        Change avatar
-                      </label>
-                      <button type="submit" class="w-fit px-4 py-1.5 rounded-md bg-gray-900 text-white text-sm font-semibold hover:bg-gray-800 transition">
-                        Upload
-                      </button>
-                      <p class="text-xs text-gray-500 mt-2">JPG, GIF or PNG. 1MB max.</p>
+                    <div class="flex items-center gap-5">
+                      <div class="relative shrink-0">
+                        {% if profile.image %}
+                          <img
+                            src="{{ profile.image.url }}"
+                            class="h-24 w-24 rounded-2xl object-cover border border-white shadow-sm"
+                          />
+                        {% else %}
+                          <span class="h-24 w-24 rounded-2xl bg-white text-gray-400 flex items-center justify-center border border-gray-200 shadow-sm">
+                            <i class="fa-solid fa-user text-2xl"></i>
+                          </span>
+                        {% endif %}
+                        <input id="avatar" name="avatar" type="file" accept="image/*" class="hidden" />
+                        <label for="avatar" class="absolute -bottom-2 -right-2 h-9 w-9 rounded-full bg-white text-gray-600 border border-gray-200 flex items-center justify-center cursor-pointer hover:bg-gray-50 transition">
+                          <i class="fa-solid fa-pen-to-square text-[11px]"></i>
+                        </label>
+                      </div>
+                      <div>
+                        <p class="text-sm font-semibold text-gray-800">Profile photo</p>
+                        <p class="text-xs text-gray-500 mt-1">Tap the edit icon to update.</p>
+                      </div>
                     </div>
                   </form>
     
@@ -161,4 +162,14 @@
         </main>
     </div>
   </body>
+  <script>
+    const avatarInput = document.getElementById("avatar");
+    if (avatarInput) {
+      avatarInput.addEventListener("change", () => {
+        if (avatarInput.files && avatarInput.files.length > 0) {
+          avatarInput.closest("form").submit();
+        }
+      });
+    }
+  </script>
 </html>
