@@ -68,8 +68,12 @@
 
                 <div class="flex items-center space-x-2">
                     
-                    {% if request.user.is_authenticated %}    
-                        <img src="https://i.pravatar.cc/40" class="h-8 w-8 rounded-full" />
+                    {% if request.user.is_authenticated %}
+                        {% if user_profile and user_profile.image %}
+                            <img src="{{ user_profile.image.url }}" class="h-8 w-8 rounded-full object-cover" />
+                        {% else %}
+                            <img src="https://i.pravatar.cc/40" class="h-8 w-8 rounded-full object-cover" />
+                        {% endif %}
                         <span class="font-semibold">{{request.user.first_name}}</span>
                     {% else %}
                         <i class="fa-solid fa-user"></i>

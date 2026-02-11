@@ -1,7 +1,9 @@
 from django.urls import path
 from .views.main_view import (
     dashboard_view,
+    contact_view,
     setting_view,
+    update_avatar_view,
     notice_view,
     react_to_notice,
     delete_notice_view,
@@ -29,9 +31,11 @@ from .views.components_view import (
 
 urlpatterns = [
     path('',dashboard_view,name='dashboard'),
+    path('contact/', contact_view, name='contact'),
     path('signup/',signup_module,name='signup'),
     path('login/',login_module,name='login'),
     path('setting/',setting_view,name='setting'),
+    path('settings/avatar/', update_avatar_view, name='update_avatar'),
     path('notice/',notice_view,name ='notice'),
     path('notice/add/',add_notice_model,name='add_notice'),
     path("notice/react/", react_to_notice, name="react_to_notice"),

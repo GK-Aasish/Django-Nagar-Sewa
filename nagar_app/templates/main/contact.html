@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact</title>
+  {% load static %}
+  <link href="{% static 'src/styles.css' %}" rel="stylesheet" />
+  <script src="https://kit.fontawesome.com/b480fa4bf0.js" crossorigin="anonymous"></script>
+</head>
+<body class="bg-gray-50">
+  <div class="flex h-screen">
+    {% include "components/sidebar.html" %}
+    {% include "components/messages.html" %}
+
+    <main class="flex-1 flex flex-col">
+      <section class="p-6 overflow-y-auto scrollbar-none">
+        <div class="w-full h-[680px] bg-white border border-dashed border-gray-300 rounded-xl overflow-y-scroll scrollbar-hide">
+
+          <div class="flex items-start justify-between gap-4 mb-6 p-4 border-b border-dashed border-gray-300">
+            <div>
+              <h1 class="text-xl font-semibold text-gray-700">Contact</h1>
+              <p class="text-xs text-gray-500 mt-1">Village Council</p>
+            </div>
+            <a href="{% url 'dashboard' %}"
+               class="text-sm font-semibold text-blue-600 hover:text-blue-700 transition inline-flex items-center gap-1.5">
+              <i class="fa-solid fa-arrow-left text-xs"></i>
+              Back to dashboard
+            </a>
+          </div>
+
+          <div class="px-6 pb-6 space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div class="lg:col-span-2 bg-gradient-to-br from-white via-gray-50 to-slate-50 border border-gray-200 rounded-2xl p-6 shadow-sm">
+                <div class="flex items-center gap-3">
+                  <span class="h-12 w-12 rounded-full bg-gray-900 text-white flex items-center justify-center">
+                    <i class="fa-solid fa-building-columns"></i>
+                  </span>
+                  <div>
+                    <p class="text-xs text-gray-500">Main Office</p>
+                    <p class="text-lg font-semibold text-gray-800">{{ council_address }}</p>
+                  </div>
+                </div>
+                <p class="text-sm text-gray-600 mt-4 leading-relaxed">
+                  Contact the village council for community services, notices, and event coordination.
+                </p>
+                <div class="mt-5 flex flex-wrap gap-3">
+                  <span class="px-3 py-1.5 rounded-full bg-white border border-gray-200 text-xs text-gray-600">
+                    <i class="fa-solid fa-clock text-gray-400 mr-1"></i>
+                    {{ council_hours }}
+                  </span>
+                  <span class="px-3 py-1.5 rounded-full bg-white border border-gray-200 text-xs text-gray-600">
+                    <i class="fa-solid fa-location-dot text-gray-400 mr-1"></i>
+                    Office visit available
+                  </span>
+                </div>
+              </div>
+
+              <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm space-y-4">
+                <div class="flex items-center gap-3">
+                  <span class="h-10 w-10 rounded-full bg-gray-900 text-white flex items-center justify-center">
+                    <i class="fa-solid fa-phone"></i>
+                  </span>
+                  <div>
+                    <p class="text-xs text-gray-500">Phone</p>
+                    <p class="text-lg font-semibold text-gray-800">{{ council_phone }}</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-3">
+                  <span class="h-10 w-10 rounded-full bg-gray-900 text-white flex items-center justify-center">
+                    <i class="fa-solid fa-envelope"></i>
+                  </span>
+                  <div>
+                    <p class="text-xs text-gray-500">Email</p>
+                    <p class="text-lg font-semibold text-gray-800">{{ council_email }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 shadow-sm">
+                <p class="text-xs text-gray-500">Emergency</p>
+                <p class="text-lg font-semibold text-gray-800">Local Support</p>
+                <p class="text-sm text-gray-600 mt-2">Call the office during working hours for urgent requests.</p>
+              </div>
+              <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 shadow-sm">
+                <p class="text-xs text-gray-500">Feedback</p>
+                <p class="text-lg font-semibold text-gray-800">Suggestions</p>
+                <p class="text-sm text-gray-600 mt-2">Send improvement ideas to the council email.</p>
+              </div>
+              <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 shadow-sm">
+                <p class="text-xs text-gray-500">Office Hours</p>
+                <p class="text-lg font-semibold text-gray-800">{{ council_hours }}</p>
+                <p class="text-sm text-gray-600 mt-2">Closed on public holidays.</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

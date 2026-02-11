@@ -1,3 +1,4 @@
+from datetime import timedelta
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import update_session_auth_hash
@@ -16,6 +17,7 @@ from ..models import (
     EventReaction,
     EventCategory,
     EventRegistration,
+    Profile,
     Meeting,
     MeetingDocument,
 )
@@ -23,12 +25,68 @@ from ..models import (
 
 def dashboard_view(request):
     """Dashboard page"""
-    return render(request, 'main/dashboard.html')
+    now = timezone.now()
+    is_admin = user_is_admin(request.user)
+
+    notices_count = Notice.objects.count()
+    notices_week = Notice.objects.filter(created_at__gte=now - timedelta(days=7)).count()
+
+    events_count = Event.objects.count()
+    upcoming_events_count = Event.objects.filter(event_date__gte=now).count()
+
+    meetings_count = Meeting.objects.count()
+    upcoming_meetings_count = Meeting.objects.filter(meeting_date__gte=now).count()
+    next_meeting = Meeting.objects.filter(meeting_date__gte=now).order_by('meeting_date').first()
+
+    if request.user.is_authenticated:
+        member_registrations_count = EventRegistration.objects.filter(user=request.user).count()
+        admin_registrations_count = EventRegistration.objects.filter(event__author=request.user).count()
+    else:
+        member_registrations_count = 0
+        admin_registrations_count = 0
+
+    registrations_count = admin_registrations_count if is_admin else member_registrations_count
+
+    upcoming_events = Event.objects.filter(event_date__gte=now).order_by('event_date')[:3]
+    upcoming_meetings = Meeting.objects.filter(meeting_date__gte=now).order_by('meeting_date')[:3]
+    latest_notices = Notice.objects.order_by('-created_at')[:4]
+
+    context = {
+        "notices_count": notices_count,
+        "notices_week": notices_week,
+        "events_count": events_count,
+        "upcoming_events_count": upcoming_events_count,
+        "meetings_count": meetings_count,
+        "upcoming_meetings_count": upcoming_meetings_count,
+        "next_meeting": next_meeting,
+        "registrations_count": registrations_count,
+        "member_registrations_count": member_registrations_count,
+        "admin_registrations_count": admin_registrations_count,
+        "upcoming_events": upcoming_events,
+        "upcoming_meetings": upcoming_meetings,
+        "latest_notices": latest_notices,
+        "now": now,
+        "is_admin": is_admin,
+    }
+    return render(request, 'main/dashboard.html', context)
+
+
+def contact_view(request):
+    """Contact page"""
+    context = {
+        "council_phone": "+00 000 000 0000",
+        "council_email": "council@example.com",
+        "council_address": "Village Council Office, Main Road",
+        "council_hours": "Sun-Fri, 9:00 AM - 5:00 PM",
+    }
+    return render(request, 'main/contact.html', context)
 
 
 @login_required
 def setting_view(request):
     """User settings page (password change)"""
+    profile, _ = Profile.objects.get_or_create(user=request.user)
+
     if request.method == "POST":
         current_password = request.POST.get("current_password")
         new_password = request.POST.get("new_password")
@@ -50,7 +108,24 @@ def setting_view(request):
         messages.success(request, "Password changed successfully.")
         return redirect("setting")
 
-    return render(request, 'main/settings.html')
+    context = {
+        "profile": profile,
+    }
+    return render(request, 'main/settings.html', context)
+
+
+@login_required
+def update_avatar_view(request):
+    if request.method == "POST":
+        profile, _ = Profile.objects.get_or_create(user=request.user)
+        image = request.FILES.get("avatar")
+        if image:
+            profile.image = image
+            profile.save()
+            messages.success(request, "Profile image updated.")
+        else:
+            messages.error(request, "Please select an image to upload.")
+    return redirect("setting")
 
 
 @login_required
