@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Meeting Image</title>
+  {% load static %}
+  <link href="{% static 'src/styles.css' %}" rel="stylesheet" />
+  <script src="https://kit.fontawesome.com/b480fa4bf0.js" crossorigin="anonymous"></script>
+</head>
+<body class="bg-gray-50">
+  <div class="flex h-screen">
+    {% include "components/sidebar.html" %}
+    {% include "components/messages.html" %}
+
+    <main class="flex-1 flex flex-col">
+      <section class="p-6 overflow-y-auto scrollbar-none">
+        <div class="w-full h-[680px] bg-white border border-dashed border-gray-300 rounded-xl overflow-y-scroll scrollbar-hide">
+
+          <!-- TOP BAR -->
+          <div class="flex items-center justify-between mb-6 p-4 border-b border-dashed border-gray-300">
+            <div>
+              <h1 class="text-xl font-semibold text-gray-700">Meeting Images</h1>
+              <p class="text-xs text-gray-500 mt-1">{{ meeting.title }}</p>
+            </div>
+            <a href="{% url 'meeting_detail' meeting.id %}" class="inline-flex items-center gap-2 text-sm font-semibold text-blue-600 hover:text-blue-700 transition">
+              <i class="fa-solid fa-arrow-left text-xs"></i>
+              Back to Details
+            </a>
+          </div>
+
+          <div class="mx-6">
+            <div class="flex items-center justify-between mb-4">
+              <div class="text-sm text-gray-600">
+                Image {{ current_index }} of {{ total_images }}
+              </div>
+              <div class="flex items-center gap-2">
+                {% if prev_doc %}
+                  <a href="{% url 'meeting_document_detail' prev_doc.id %}" class="px-3 py-1.5 text-sm rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200 transition">
+                    Previous
+                  </a>
+                {% endif %}
+                {% if next_doc %}
+                  <a href="{% url 'meeting_document_detail' next_doc.id %}" class="px-3 py-1.5 text-sm rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200 transition">
+                    Next
+                  </a>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="bg-white border border-gray-200 rounded-2xl p-4">
+              <img src="{{ doc.file.url }}" alt="Meeting image" class="w-full max-h-[520px] object-contain rounded-xl bg-gray-50" />
+            </div>
+
+            <div class="mt-5">
+              <div class="flex items-center justify-between mb-2">
+                <h3 class="text-sm font-semibold text-gray-700">Gallery</h3>
+                <span class="text-xs text-gray-500">{{ total_images }} images</span>
+              </div>
+              <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
+                {% for img in images %}
+                  <a href="{% url 'meeting_document_detail' img.id %}"
+                     class="shrink-0 h-16 w-16 rounded-lg overflow-hidden border border-gray-200 bg-gray-50 {% if img.id == doc.id %}ring-2 ring-gray-900{% endif %}">
+                    <img src="{{ img.file.url }}" alt="Meeting image" class="h-full w-full object-cover" />
+                  </a>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

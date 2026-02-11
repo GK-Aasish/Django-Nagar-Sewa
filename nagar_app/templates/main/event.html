@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Event Board</title>
+  {% load static %}
+  <link href="{% static 'src/styles.css' %}" rel="stylesheet" />
+  <script src="https://kit.fontawesome.com/b480fa4bf0.js" crossorigin="anonymous"></script>
+
+  <!-- Animation Styles -->
+  <style>
+    .fade-out {
+      opacity: 0;
+      transform: scale(0.98);
+      transition: all 0.2s ease;
+    }
+
+    .fade-in {
+      opacity: 1;
+      transform: scale(1);
+      transition: all 0.25s ease;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-50">
+  <div class="flex h-screen">
+    {% include "components/sidebar.html" %}
+    {% include 'components/messages.html' %}
+
+    <main class="flex-1 flex flex-col">
+      <section class="p-6 overflow-y-auto scrollbar-none">
+        <div class="w-full h-[680px] bg-white border border-dashed border-gray-300 rounded-xl overflow-y-scroll scrollbar-hide">
+
+          <!-- TOP BAR -->
+          <div class="flex items-center justify-between mb-6 p-4 border-b border-dashed border-gray-300">
+            <h1 class="text-xl font-semibold text-gray-700">Event Board</h1>
+
+            <div class="flex items-center gap-3">
+              <!-- FILTER -->
+              <select id="categoryFilter"
+                class="text-sm border border-gray-200 rounded-md px-3 py-1.5 text-gray-600 focus:outline-none focus:ring-1 focus:ring-gray-300">
+                <option value="all">All Events</option>
+                {% for category in categories %}
+                  <option value="{{ category.name }}">{{ category.name }}</option>
+                {% endfor %}
+              </select>
+
+              <!-- ADD EVENT BUTTON -->
+              {% if is_admin %}
+              <a href="{% url 'add_event' %}"
+                class="flex items-center gap-1.5 text-sm bg-gray-800 text-white px-4 py-1.5 rounded-md hover:bg-gray-700 transition">
+                <i class="fa-solid fa-plus text-xs"></i>
+                Add Event
+              </a>
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- EVENT LIST -->
+          <div id="eventList" class="grid grid-cols-1 md:grid-cols-2 gap-4 mx-6">
+            {% for item in events_with_reactions %}
+            {% with event=item.event user_reaction=item.user_reaction %}
+            <div
+              class="relative transition-all duration-300 border-l-4 rounded-2xl bg-white/90 shadow-sm ring-1 ring-gray-100 hover:shadow-xl hover:ring-gray-200 overflow-hidden"
+              data-category="{{ event.category.name }}">
+
+              {% if event.image %}
+              <div class="relative overflow-hidden border-b border-gray-200 bg-gray-50">
+                <img src="{{ event.image.url }}"
+                  alt="{{ event.title }}"
+                  class="w-full max-h-64 object-cover transition duration-500 hover:scale-[1.02]" />
+                <span
+                  class="absolute bottom-3 right-3 text-[11px] bg-gray-900/90 text-white px-3 py-1 rounded-full font-semibold shadow">
+                  {{ event.author.first_name }}
+                </span>
+              </div>
+              {% endif %}
+
+              <div class="px-6 pb-6 {% if event.image %}pt-4{% else %}pt-6{% endif %}">
+                <div class="flex justify-between items-start gap-3">
+                  <div>
+                    <h2 class="text-xl font-bold text-gray-900">{{ event.title }}</h2>
+                    <p class="text-xs text-gray-500 mt-1">{{ event.category.name }}</p>
+                  </div>
+
+                  <div class="flex gap-2">
+                    <div class="flex items-center gap-1 px-3 py-1 rounded-full text-sm bg-blue-50 text-blue-600">
+                      <i class="fa-regular fa-thumbs-up"></i>
+                      <span
+                        class="bg-blue-600 text-white px-2 py-0.5 rounded-full text-xs">{{ event.like_count }}</span>
+                    </div>
+
+                    <div class="flex items-center gap-1 px-3 py-1 rounded-full text-sm bg-red-50 text-red-600">
+                      <i class="fa-regular fa-thumbs-down"></i>
+                      <span
+                        class="bg-red-600 text-white px-2 py-0.5 rounded-full text-xs">{{ event.dislike_count }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex flex-col mt-5 gap-3">
+                  <div class="flex items-end justify-between flex-wrap gap-3">
+                    <div class="flex flex-col gap-2 text-gray-600 text-sm">
+                      <div class="flex items-center gap-2 bg-gray-50 border border-gray-200 px-3 py-1.5 rounded-full">
+                        <i class="fa-regular fa-calendar text-gray-500"></i>
+                        <span>{{ event.event_date|date:"M d, Y h:i A" }}</span>
+                      </div>
+
+                      <div class="flex items-center gap-2 bg-gray-50 border border-gray-200 px-3 py-1.5 rounded-full">
+                        <i class="fa-solid fa-location-dot text-gray-500"></i>
+                        <span>{{ event.location }}</span>
+                      </div>
+                    </div>
+
+                    <a href="{% url 'event_detail' event.id %}"
+                      class="px-5 py-2.5 rounded-md text-base font-semibold bg-gray-900 text-white hover:bg-gray-800 transition">
+                      View
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+            {% endwith %}
+            {% endfor %}
+          </div>
+
+          <!-- NO EVENTS MESSAGE -->
+          <p id="noEventsMessage"
+            class="hidden text-center text-gray-500 text-sm py-10">
+            No events found for this category.
+          </p>
+
+        </div>
+      </section>
+    </main>
+  </div>
+
+  {% include 'components/confirm_delete.html' with delete_item_label="event" %}
+
+  <!-- Scripts -->
+  <script>
+    // Category Colors
+    const categoryColors = {
+      "General": "#2563eb",
+      "Village Meeting": "#059669",
+      "Government Scheme": "#0d9488",
+      "Agriculture": "#84cc16",
+      "Water / Electricity": "#06b6d4",
+      "Health": "#f43f5e",
+      "Road / Sanitation": "#f59e0b",
+      "Festival / Event": "#d946ef"
+    };
+
+    document.querySelectorAll('#eventList > div').forEach(card => {
+      const category = card.dataset.category;
+      card.style.borderLeftColor = categoryColors[category] || "#94a3b8";
+    });
+
+    // FILTER WITH ANIMATION
+    const filter = document.getElementById('categoryFilter');
+    const cards = document.querySelectorAll('#eventList > div');
+    const noEventsMessage = document.getElementById('noEventsMessage');
+
+    filter.addEventListener('change', () => {
+      const selected = filter.value;
+      let visibleCount = 0;
+
+      cards.forEach(card => {
+        const category = card.dataset.category;
+
+        if (selected === 'all' || category === selected) {
+          card.classList.remove('hidden', 'fade-out');
+          card.classList.add('fade-in');
+          visibleCount++;
+        } else {
+          card.classList.remove('fade-in');
+          card.classList.add('fade-out');
+          setTimeout(() => {
+            card.classList.add('hidden');
+          }, 200);
+        }
+      });
+
+      if (visibleCount === 0) {
+        noEventsMessage.classList.remove('hidden');
+      } else {
+        noEventsMessage.classList.add('hidden');
+      }
+    });
+  </script>
+</body>
+</html>

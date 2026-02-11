@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Event Board</title>
+
+  {% load static %}
+  <link href="{% static 'src/styles.css' %}" rel="stylesheet" />
+  <script src="https://kit.fontawesome.com/b480fa4bf0.js" crossorigin="anonymous"></script>
+</head>
+
+<body class="bg-gray-50">
+  <div class="flex h-screen">
+
+    {% include "components/sidebar.html" %}
+
+    <main class="flex-1 flex flex-col">
+      <section class="p-6 overflow-y-auto scrollbar-none">
+
+        <!-- Container -->
+        <div class="w-full h-[680px] bg-white border border-dashed border-gray-300 rounded-xl overflow-y-scroll scrollbar-hide">
+
+          <!-- Top Bar -->
+          <div class="flex items-center justify-between border-b border-dashed border-gray-300 p-4">
+            <h1 class="text-xl font-semibold text-gray-700">Event Board</h1>
+          </div>
+
+          <!-- Center Card -->
+          <div class="flex justify-center">
+            <div
+              id="eventCard"
+              class="relative border-l-4 rounded-xl p-6 bg-white shadow-md hover:shadow-xl transition-colors duration-300 max-w-2xl w-full mt-6"
+              style="border-left-color: #94a3b8;">
+
+              <!-- Header -->
+              <div class="mb-4">
+                <h1 class="text-2xl font-bold text-gray-800">Edit Event</h1>
+                <p class="text-xs text-gray-500 mt-1">Edit details for your village event</p>
+              </div>
+
+              <!-- Form -->
+              <form class="space-y-4" method="post" action="{% url 'edit_event' event.id %}" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <!-- Title -->
+                <div>
+                  <label class="block text-gray-700 font-semibold text-sm mb-1">Title</label>
+                  <input
+                    type="text"
+                    name="title"
+                    value="{{ event.title }}"
+                    placeholder="Enter event title"
+                    class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                  <p class="text-red-500">{{ error.title }}</p>
+                </div>
+
+                <!-- Category -->
+                <div>
+                  <label class="block text-gray-700 font-semibold text-sm mb-1">Category</label>
+                  <select
+                    id="category"
+                    name="category"
+                    class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  >
+                    <option value="">Select category</option>
+                    {% for category in categories %}
+                      <option value="{{ category.id }}"
+                        {% if event.category.id == category.id %}selected{% endif %}>
+                        {{ category.name }}
+                      </option>
+                    {% endfor %}
+                  </select>
+                  <p class="text-red-500">{{ error.category }}</p>
+                </div>
+
+                <!-- Description -->
+                <div>
+                  <label class="block text-gray-700 font-semibold text-sm mb-1">Description</label>
+                  <textarea
+                    name="description"
+                    rows="4"
+                    placeholder="Write event description"
+                    class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  >{{ event.description }}</textarea>
+                  <p class="text-red-500">{{ error.description }}</p>
+                </div>
+
+                <!-- Event Date -->
+                <div>
+                  <label class="block text-gray-700 font-semibold text-sm mb-1">Event Date & Time</label>
+                  <input
+                    type="datetime-local"
+                    name="event_date"
+                    value="{{ event.event_date|date:'Y-m-d\\TH:i' }}"
+                    class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                  <p class="text-red-500">{{ error.event_date }}</p>
+                </div>
+
+                <!-- Location -->
+                <div>
+                  <label class="block text-gray-700 font-semibold text-sm mb-1">Location</label>
+                  <input
+                    type="text"
+                    name="location"
+                    value="{{ event.location }}"
+                    placeholder="Enter location"
+                    class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                  <p class="text-red-500">{{ error.location }}</p>
+                </div>
+
+                <!-- Image -->
+                <div>
+                  <label class="block text-gray-700 font-semibold text-sm mb-1">Event Image (optional)</label>
+                  {% if event.image %}
+                    <img src="{{ event.image.url }}" alt="{{ event.title }}" class="mb-2 w-full max-h-48 object-cover rounded-lg border border-gray-200" />
+                  {% endif %}
+                  <input
+                    type="file"
+                    name="image"
+                    accept="image/*"
+                    class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                </div>
+
+                <!-- Submit -->
+                <div class="flex justify-end">
+                  <button
+                    type="button"
+                    id="openCancelEditModal"
+                    class="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition mr-3"
+                  >
+                    <i class="fa-solid fa-xmark"></i> Cancel
+                  </button>
+
+                  <button type="submit" class="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+                    <i class="fa-solid fa-plus"></i> Update Event
+                  </button>
+                </div>
+              </form>
+
+              {% url 'event' as event_list_url %}
+              {% url 'event_detail' event.id as event_detail_url %}
+              {% include "components/cancel_edit.html" with cancel_item_label="event" cancel_url=event_detail_url %}
+
+            </div>
+          </div>
+
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Script: Change border color based on category -->
+  <script>
+    const categorySelect = document.getElementById("category");
+    const eventCard = document.getElementById("eventCard");
+
+    const categoryColors = {
+      1: "#2563eb",
+      2: "#059669",
+      3: "#0d9488",
+      4: "#84cc16",
+      5: "#06b6d4",
+      6: "#f43f5e",
+      7: "#f59e0b",
+      8: "#d946ef"
+    };
+
+    function updateBorderColor() {
+      const selected = parseInt(categorySelect.value);
+      eventCard.style.borderLeftColor = categoryColors[selected] || "#94a3b8";
+    }
+
+    updateBorderColor();
+    categorySelect.addEventListener("change", updateBorderColor);
+
+    const openCancelEditModal = document.getElementById("openCancelEditModal");
+    const cancelEditModal = document.getElementById("cancelEditModal");
+    const closeCancelEditModal = document.getElementById("closeCancelEditModal");
+
+    openCancelEditModal.addEventListener("click", () => {
+      cancelEditModal.classList.remove("hidden");
+    });
+
+    closeCancelEditModal.addEventListener("click", () => {
+      cancelEditModal.classList.add("hidden");
+    });
+
+    cancelEditModal.addEventListener("click", (e) => {
+      if (e.target === cancelEditModal) {
+        cancelEditModal.classList.add("hidden");
+      }
+    });
+  </script>
+
+</body>
+</html>

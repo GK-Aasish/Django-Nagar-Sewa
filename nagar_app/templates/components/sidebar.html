@@ -25,7 +25,7 @@
             <i class="fa-solid fa-users mr-3"></i> Dashboard
         </a>
 
-        <a href="#" class="nav-link flex items-center px-3 py-2 rounded-lg
+        <a href="{% url 'meeting' %}" class="nav-link flex items-center px-3 py-2 rounded-lg
        {% if request.resolver_match.url_name == 'meeting' %}
            bg-sky-100 text-indigo-600
        {% else %}
@@ -34,7 +34,7 @@
             <i class="fa-solid fa-folder mr-3"></i> Meetings
         </a>
 
-        <a href="#" class="nav-link flex items-center px-3 py-2 rounded-lg
+        <a href="{% url 'event' %}" class="nav-link flex items-center px-3 py-2 rounded-lg
        {% if request.resolver_match.url_name == 'event' %}
            bg-sky-100 text-indigo-600
        {% else %}

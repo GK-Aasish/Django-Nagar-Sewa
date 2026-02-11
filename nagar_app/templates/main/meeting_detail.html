@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Meeting Details</title>
+  {% load static %}
+  <link href="{% static 'src/styles.css' %}" rel="stylesheet" />
+  <script src="https://kit.fontawesome.com/b480fa4bf0.js" crossorigin="anonymous"></script>
+</head>
+<body class="bg-gray-50">
+  <div class="flex h-screen">
+    {% include "components/sidebar.html" %}
+    {% include "components/messages.html" %}
+
+    <main class="flex-1 flex flex-col">
+      <section class="p-6 overflow-y-auto scrollbar-none">
+        <div class="w-full h-[680px] bg-white border border-dashed border-gray-300 rounded-xl overflow-y-scroll scrollbar-hide">
+
+          <!-- TOP BAR -->
+          <div class="flex items-center justify-between mb-6 p-4 border-b border-dashed border-gray-300">
+            <h1 class="text-xl font-semibold text-gray-700">Meeting Details</h1>
+            <a href="{% url 'meeting' %}" class="inline-flex items-center gap-2 text-sm font-semibold text-blue-600 hover:text-blue-700 transition">
+              <i class="fa-solid fa-arrow-left text-xs"></i>
+              Back to Meetings
+            </a>
+          </div>
+
+          <div class="mx-6">
+            <!-- Header strip -->
+            <div class="flex flex-col gap-3 border-b border-gray-200 pb-4">
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <h2 class="text-2xl font-bold text-gray-900">{{ meeting.title }}</h2>
+                  <p class="text-xs text-gray-500 mt-1">By {{ meeting.author.first_name }}</p>
+                </div>
+                <div class="flex items-center gap-3">
+                  {% if meeting.meeting_date < now %}
+                    <span class="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full font-semibold">Completed</span>
+                  {% else %}
+                    <span class="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-semibold">Upcoming</span>
+                  {% endif %}
+                  {% if is_admin %}
+                    <button
+                      class="deleteBtn px-3 py-1 text-xs font-semibold rounded-md bg-red-600 text-white hover:bg-red-700 transition"
+                      data-delete-url="{% url 'delete_meeting' meeting.id %}">
+                      Delete Meeting
+                    </button>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="flex flex-wrap items-center gap-6 text-gray-600 text-sm">
+                <div class="flex items-center gap-2">
+                  <i class="fa-regular fa-calendar text-gray-500"></i>
+                  <span class="font-medium">{{ meeting.meeting_date|date:"M d, Y h:i A" }}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <i class="fa-solid fa-location-dot text-gray-500"></i>
+                  <span class="font-medium">{{ meeting.location }}</span>
+                </div>
+                <div class="flex items-center gap-2 text-xs text-gray-500">
+                  <i class="fa-regular fa-id-badge text-gray-400"></i>
+                  Meeting ID: {{ meeting.id }}
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-6 grid grid-cols-1 lg:grid-cols-5 gap-10">
+              <!-- Left: details -->
+              <div class="lg:col-span-3">
+                <div class="border-l-4 pl-4" style="border-left-color: #94a3b8;">
+                  <h3 class="text-xs uppercase tracking-wider text-gray-500 font-semibold">Overview</h3>
+                  <p class="text-sm text-gray-700 mt-3 leading-relaxed">{{ meeting.description }}</p>
+
+                  <div class="mt-6 border-t border-gray-200 pt-4">
+                    <div class="text-xs text-gray-500">Notes and follow‑ups can be added here later.</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right: documents -->
+              <aside class="lg:col-span-2">
+                <div class="flex items-center justify-between">
+                  <h2 class="text-lg font-semibold text-gray-800">Documents</h2>
+                  <span class="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full font-semibold">
+                    {{ documents|length }} total
+                  </span>
+                </div>
+
+                {% if is_admin %}
+                  <div class="mt-3">
+                    {% if meeting.meeting_date < now %}
+                      <a href="{% url 'upload_meeting_document' meeting.id %}" class="inline-flex items-center justify-center px-4 py-2 rounded-md text-sm font-semibold bg-gray-900 text-white hover:bg-gray-800 transition">
+                        Upload Documents
+                      </a>
+                    {% else %}
+                      <p class="text-xs text-gray-500">Upload after meeting ends.</p>
+                    {% endif %}
+                  </div>
+                {% endif %}
+
+                <div class="mt-4 border-t border-gray-200 pt-4">
+                  {% if documents %}
+                    <div class="text-xs uppercase tracking-wider text-gray-400 font-semibold mb-2">Documents</div>
+                    <div class="space-y-2">
+                      {% for doc in documents %}
+                        <div class="flex items-center justify-between gap-3 px-3 py-2 border border-gray-200 bg-white hover:bg-gray-50 transition">
+                          <div class="flex items-center gap-3">
+                            <span class="h-9 w-9 flex items-center justify-center bg-gray-100 text-gray-700">
+                              <i class="fa-regular fa-file-lines"></i>
+                            </span>
+                            <div>
+                              <div class="text-sm font-semibold text-gray-800">{{ doc.get_document_type_display }}</div>
+                              <div class="text-xs text-gray-500">{{ doc.uploaded_at|date:"M d, Y" }}</div>
+                            </div>
+                          </div>
+
+                          <div class="flex items-center gap-2">
+                            <a
+                              href="{{ doc.file.url }}"
+                              download
+                              class="h-8 w-8 flex items-center justify-center bg-white text-gray-700 hover:text-gray-900"
+                              title="Download document">
+                              <i class="fa-solid fa-download text-xs"></i>
+                            </a>
+                            {% if is_admin %}
+                              <button
+                                class="deleteBtn h-8 w-8 flex items-center justify-center bg-white text-gray-700 hover:text-red-600"
+                                data-delete-url="{% url 'delete_meeting_document' doc.id %}"
+                                title="Delete document">
+                                <i class="fa-solid fa-trash text-xs"></i>
+                              </button>
+                            {% endif %}
+                          </div>
+                        </div>
+                      {% endfor %}
+                    </div>
+                  {% else %}
+                    <p class="text-xs text-gray-500">No documents uploaded yet.</p>
+                  {% endif %}
+                </div>
+              </aside>
+            </div>
+          </div>
+
+        </div>
+      </section>
+    </main>
+  </div>
+
+  {% include 'components/confirm_delete.html' with delete_item_label="item" %}
+
+  <script>
+    const deleteModal = document.getElementById("deleteModal");
+    const deleteForm = document.getElementById("deleteForm");
+    const cancelDelete = document.getElementById("cancelDelete");
+
+    document.querySelectorAll(".deleteBtn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const deleteUrl = btn.dataset.deleteUrl;
+        deleteForm.action = deleteUrl;
+        deleteModal.classList.remove("hidden");
+      });
+    });
+
+    cancelDelete.addEventListener("click", () => {
+      deleteModal.classList.add("hidden");
+      deleteForm.action = "";
+    });
+
+    deleteModal.addEventListener("click", (e) => {
+      if (e.target === deleteModal) {
+        deleteModal.classList.add("hidden");
+        deleteForm.action = "";
+      }
+    });
+  </script>
+</body>
+</html>

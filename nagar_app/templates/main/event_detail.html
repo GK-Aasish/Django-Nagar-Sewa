@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Event Details</title>
+  {% load static %}
+  <link href="{% static 'src/styles.css' %}" rel="stylesheet" />
+  <script src="https://kit.fontawesome.com/b480fa4bf0.js" crossorigin="anonymous"></script>
+</head>
+<body class="bg-gray-50">
+  <div class="flex h-screen">
+    {% include "components/sidebar.html" %}
+    {% include 'components/messages.html' %}
+
+    <main class="flex-1 flex flex-col">
+      <section class="p-6 overflow-y-auto scrollbar-none">
+        <div class="w-full h-[680px] bg-white border border-dashed border-gray-300 rounded-xl overflow-y-scroll scrollbar-hide">
+
+          <div class="flex items-center justify-between mb-6 p-4 border-b border-dashed border-gray-300">
+            <h1 class="text-xl font-semibold text-gray-700">Event Details</h1>
+            <a href="{% url 'event' %}" class="inline-flex items-center gap-2 text-sm font-semibold text-blue-600 hover:text-blue-700 transition">
+              <i class="fa-solid fa-arrow-left text-xs"></i>
+              Back to Events
+            </a>
+          </div>
+
+          <div class="mx-6 grid grid-cols-1 lg:grid-cols-5 gap-6">
+            <!-- Left: event card -->
+            <div class="lg:col-span-3">
+              <div class="relative border-l-4 rounded-2xl p-0 bg-white/90 shadow-sm ring-1 ring-gray-100 hover:ring-gray-200 transition duration-300 overflow-hidden"
+                   data-category="{{ event.category.name }}">
+                <div class="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-gradient-to-br from-gray-100 to-transparent opacity-70 pointer-events-none"></div>
+                <div class="absolute -right-6 -bottom-10 h-24 w-24 rounded-full bg-gradient-to-tr from-blue-50 to-transparent opacity-80 pointer-events-none"></div>
+
+                {% if event.image %}
+                  <div class="relative overflow-hidden border-b border-gray-200 bg-gray-50">
+                    <img src="{{ event.image.url }}" alt="{{ event.title }}" class="w-full max-h-72 object-cover transition duration-500 hover:scale-[1.02]" />
+                    <span class="absolute bottom-3 right-3 text-[11px] bg-gray-900/90 text-white px-3 py-1 rounded-full font-semibold tracking-wide shadow">
+                      {{ event.author.first_name }}
+                    </span>
+                  </div>
+                {% endif %}
+
+                <div class="px-6 pb-6 {% if event.image %}pt-4{% else %}pt-6{% endif %}">
+                  <div class="flex justify-between items-start gap-3">
+                    <div>
+                      <h2 class="text-2xl font-bold text-gray-900">{{ event.title }}</h2>
+                      <div class="mt-1 flex items-center gap-2">
+                        <span class="text-[11px] uppercase tracking-wide font-semibold text-gray-500">Category</span>
+                        <span class="text-xs text-gray-600">{{ event.category.name }}</span>
+                      </div>
+                    </div>
+                    <div class="flex items-center gap-2 flex-wrap">
+                      <!-- Like -->
+                      <button class="flex items-center gap-1 px-3 py-1 rounded-full text-sm transition reaction-btn
+                        {% if user_reaction == 'Like' %}bg-blue-100 text-blue-700{% else %}bg-blue-50 text-blue-600{% endif %}"
+                        data-event-id="{{ event.id }}" data-reaction="Like">
+                        <i class="fa-regular fa-thumbs-up"></i>
+                        <span class="bg-blue-600 text-white px-2 py-0.5 rounded-full text-xs">{{ like_count }}</span>
+                      </button>
+
+                      <!-- Dislike -->
+                      <button class="flex items-center gap-1 px-3 py-1 rounded-full text-sm transition reaction-btn
+                        {% if user_reaction == 'Dislike' %}bg-red-100 text-red-700{% else %}bg-red-50 text-red-600{% endif %}"
+                        data-event-id="{{ event.id }}" data-reaction="Dislike">
+                        <i class="fa-regular fa-thumbs-down"></i>
+                        <span class="bg-red-600 text-white px-2 py-0.5 rounded-full text-xs">{{ dislike_count }}</span>
+                      </button>
+                    </div>
+                    {% if not event.image %}
+                    <div class="flex items-center gap-2">
+                      <span class="text-[11px] bg-gray-900 text-white px-3 py-1 rounded-full font-semibold tracking-wide">{{ event.author.first_name }}</span>
+                    </div>
+                    {% endif %}
+                  </div>
+
+                  <p class="text-sm text-gray-700 mt-4 leading-relaxed">{{ event.description }}</p>
+
+                  <div class="flex flex-col mt-5 gap-3">
+                    <div class="flex items-center justify-between gap-4">
+                      <div class="flex items-center gap-6 text-gray-600 text-sm">
+                        <div class="flex items-center gap-2">
+                          <i class="fa-regular fa-calendar text-gray-500"></i>
+                          <span class="font-medium">{{ event.event_date|date:"M d, Y h:i A" }}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                          <i class="fa-solid fa-location-dot text-gray-500"></i>
+                          <span class="font-medium">{{ event.location }}</span>
+                        </div>
+                      </div>
+
+                      <div class="flex items-center gap-1.5">
+                        {% if is_admin %}
+                          <a href="{% url 'edit_event' event.id %}" class="px-4 py-2 rounded-md text-sm font-semibold bg-green-600 text-white hover:bg-green-700 transition">
+                            Edit
+                          </a>
+                          <button
+                            class="deleteBtn px-4 py-2 rounded-md text-sm font-semibold bg-red-600 text-white hover:bg-red-700 transition"
+                            data-delete-url="{% url 'delete_event' event.id %}">
+                            Delete
+                          </button>
+                        {% endif %}
+
+                        <form method="post" action="{% url 'event_register' event.id %}">
+                          {% csrf_token %}
+                          <button
+                            type="submit"
+                            class="px-5 py-2.5 rounded-md text-sm font-semibold bg-gray-900 text-white hover:bg-gray-800 transition">
+                            {% if is_registered %}Unregister{% else %}Register{% endif %}
+                          </button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: registrations -->
+            <aside class="lg:col-span-2">
+              <div class="bg-white border border-dashed border-gray-300 rounded-xl p-4">
+                <div class="flex items-center justify-between mb-3">
+                  <h2 class="text-lg font-semibold text-gray-800">Registrations</h2>
+                  <span class="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full font-semibold">
+                    {{ registration_count }} total
+                  </span>
+                </div>
+
+                {% if is_admin %}
+                  <div class="space-y-2 max-h-[520px] overflow-y-auto pr-1">
+                    {% for reg in registrations %}
+                      <div class="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
+                        <div class="flex items-center gap-2">
+                          <span class="inline-flex items-center justify-center h-7 w-7 rounded-full bg-gray-900 text-white text-xs font-semibold">
+                            {{ reg.user.first_name|default:reg.user.username|slice:":1" }}
+                          </span>
+                          <div>
+                            <p class="text-sm font-medium text-gray-800">
+                              {{ reg.user.first_name }} {{ reg.user.last_name }}
+                            </p>
+                            <p class="text-xs text-gray-500">@{{ reg.user.username }}</p>
+                          </div>
+                        </div>
+                        <span class="text-xs text-gray-500">{{ reg.registered_at|date:"M d, Y" }}</span>
+                      </div>
+                    {% empty %}
+                      <p class="text-sm text-gray-500">No one has registered yet.</p>
+                    {% endfor %}
+                  </div>
+                {% else %}
+                  <div class="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-lg px-3 py-3">
+                    <div>
+                      <p class="text-sm text-gray-600">Members registered</p>
+                      <p class="text-2xl font-bold text-gray-800">{{ registration_count }}</p>
+                    </div>
+                    <i class="fa-solid fa-users text-gray-400 text-2xl"></i>
+                  </div>
+                {% endif %}
+              </div>
+            </aside>
+          </div>
+
+        </div>
+      </section>
+    </main>
+  </div>
+
+  {% include 'components/confirm_delete.html' with delete_item_label="event" %}
+
+  <script>
+    const deleteModal = document.getElementById("deleteModal");
+    const deleteForm = document.getElementById("deleteForm");
+    const cancelDelete = document.getElementById("cancelDelete");
+
+    document.querySelectorAll(".deleteBtn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const deleteUrl = btn.dataset.deleteUrl;
+        deleteForm.action = deleteUrl;
+        deleteModal.classList.remove("hidden");
+      });
+    });
+
+    cancelDelete.addEventListener("click", () => {
+      deleteModal.classList.add("hidden");
+      deleteForm.action = "";
+    });
+
+    deleteModal.addEventListener("click", (e) => {
+      if (e.target === deleteModal) {
+        deleteModal.classList.add("hidden");
+        deleteForm.action = "";
+      }
+    });
+  </script>
+  <script>
+    // Like/Dislike AJAX
+    document.querySelectorAll('.reaction-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const eventId = btn.dataset.eventId;
+        const reaction = btn.dataset.reaction;
+
+        fetch("{% url 'react_to_event' %}", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-CSRFToken": getCookie("csrftoken"),
+          },
+          body: `event_id=${eventId}&reaction=${reaction}`
+        })
+        .then(response => response.json())
+        .then(data => {
+          const likeBtn = document.querySelector('[data-reaction="Like"]');
+          const dislikeBtn = document.querySelector('[data-reaction="Dislike"]');
+
+          likeBtn.querySelector('span').textContent = data.like_count;
+          dislikeBtn.querySelector('span').textContent = data.dislike_count;
+
+          if (reaction === 'Like') {
+            likeBtn.classList.add('bg-blue-100', 'text-blue-700');
+            likeBtn.classList.remove('bg-blue-50', 'text-blue-600');
+            dislikeBtn.classList.remove('bg-red-100', 'text-red-700');
+            dislikeBtn.classList.add('bg-red-50', 'text-red-600');
+          } else {
+            dislikeBtn.classList.add('bg-red-100', 'text-red-700');
+            dislikeBtn.classList.remove('bg-red-50', 'text-red-600');
+            likeBtn.classList.remove('bg-blue-100', 'text-blue-700');
+            likeBtn.classList.add('bg-blue-50', 'text-blue-600');
+          }
+        });
+      });
+    });
+
+    // CSRF helper
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+  </script>
+</body>
+</html>

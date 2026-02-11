@@ -1,7 +1,31 @@
 from django.urls import path
-from .views.main_view import dashboard_view,setting_view,notice_view,react_to_notice,delete_notice_view
-from .views.auth_view import signup_module,login_module,logout_module
-from .views.components_view import add_notice_model,edit_notice_view,cancel_edit
+from .views.main_view import (
+    dashboard_view,
+    setting_view,
+    notice_view,
+    react_to_notice,
+    delete_notice_view,
+    event_view,
+    react_to_event,
+    delete_event_view,
+    event_detail_view,
+    register_event_view,
+    meeting_view,
+    upload_meeting_document_view,
+    meeting_detail_view,
+    meeting_document_detail_view,
+    delete_meeting_view,
+    delete_meeting_document_view,
+)
+from .views.auth_view import signup_module, login_module, logout_module
+from .views.components_view import (
+    add_notice_model,
+    edit_notice_view,
+    cancel_edit,
+    add_event_view,
+    edit_event_view,
+    add_meeting_view,
+)
 
 urlpatterns = [
     path('',dashboard_view,name='dashboard'),
@@ -14,6 +38,20 @@ urlpatterns = [
     path('notices/edit/<int:notice_id>/', edit_notice_view, name='edit_notice'),
     path('notices/delete/<int:notice_id>/', delete_notice_view, name='delete_notice'),
     path('notice/<int:notice_id>/cancel/', cancel_edit, name='cancel_edit_notice_confirm'),
+    path('meetings/', meeting_view, name='meeting'),
+    path('meetings/add/', add_meeting_view, name='add_meeting'),
+    path('meetings/<int:meeting_id>/', meeting_detail_view, name='meeting_detail'),
+    path('meetings/<int:meeting_id>/delete/', delete_meeting_view, name='delete_meeting'),
+    path('meetings/documents/<int:doc_id>/', meeting_document_detail_view, name='meeting_document_detail'),
+    path('meetings/documents/<int:doc_id>/delete/', delete_meeting_document_view, name='delete_meeting_document'),
+    path('meetings/<int:meeting_id>/upload/', upload_meeting_document_view, name='upload_meeting_document'),
+    path('event/', event_view, name='event'),
+    path('event/add/', add_event_view, name='add_event'),
+    path('events/<int:event_id>/', event_detail_view, name='event_detail'),
+    path('events/<int:event_id>/register/', register_event_view, name='event_register'),
+    path('events/edit/<int:event_id>/', edit_event_view, name='edit_event'),
+    path('events/delete/<int:event_id>/', delete_event_view, name='delete_event'),
+    path("event/react/", react_to_event, name="react_to_event"),
     path('logout/',logout_module,name='logout'),
     path("settings/change-password/",setting_view, name="change_password"),
 ]
